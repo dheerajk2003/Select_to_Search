@@ -6,3 +6,5 @@
 
 **Converted rgb file to png file using libpng**
 *https://gist.github.com/niw/5963798*
+
+**Got partial screen shot working using XEvent**

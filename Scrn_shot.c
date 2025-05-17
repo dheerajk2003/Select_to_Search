@@ -8,6 +8,12 @@
 #include <time.h>
 #include <png.h>
 
+Display *rootDisplay;
+Window rootWindow;
+int screenNumber;
+XWindowAttributes returnWindowAttributes;
+Drawable d;
+
 unsigned char * to_rgb(XImage * image, int width, int height){
     unsigned char* rgb_data = malloc(width * height * 3);
     
@@ -67,43 +73,83 @@ void to_png(unsigned char * rgb_data, int width, int height){
     fclose(fp);
 }
 
-int main(){
-    printf("Starting program");
-
-    Display *rootDisplay = XOpenDisplay(NULL);
-    Window rootWindow;
-    int screenNumber;
-    XWindowAttributes returnWindowAttributes;
-    
-    if(rootDisplay == NULL)
-    {
-        printf("cannot open connection to display");
-        return 0;
+void init(){
+    rootDisplay = XOpenDisplay(NULL);
+    if(!rootDisplay){
+        printf("cannot open connection to display \n");
+        return ;
     }
-
-    printf("Opened display");
 
     screenNumber = XDefaultScreen(rootDisplay);
     rootWindow = RootWindow(rootDisplay, screenNumber);
     XGetWindowAttributes(rootDisplay, rootWindow, &returnWindowAttributes);
+    d = rootWindow;
+}
 
-    Drawable d = rootWindow;
-    int x = returnWindowAttributes.x;
-    int y = returnWindowAttributes.y;
-    int width = returnWindowAttributes.width;
-    int height = returnWindowAttributes.height;
+void ScreenShot(int x, int y, int width, int height){
+    init();
+
+    if(width == 0 && height == 0){
+        width = returnWindowAttributes.width;
+        height = returnWindowAttributes.height;
+    }
     
     printf("%d - %d , %d - %d \n",x, y, width, height);
 
     XImage *image = XGetImage(rootDisplay, d, x, y, width, height, AllPlanes, ZPixmap);
     if(!image){
         printf("Cannot get image \n");
-        return 0;
+        return ;
     }
 
     unsigned char * rgb_data = to_rgb(image, width, height);
     to_png(rgb_data,width, height);
 
+    free(rgb_data);
+
     XCloseDisplay(rootDisplay);
+}
+
+void SelectScreen(){
+    init();
+    int xStart, yStart, xEnd, yEnd;
+    int displayWidth = DisplayWidth(rootDisplay, screenNumber);
+    int displayHeight = DisplayHeight(rootDisplay, screenNumber);
+
+    XSetWindowAttributes attr;
+    attr.override_redirect = True;
+    attr.event_mask = ButtonPressMask | ButtonReleaseMask;
+
+    Window newWindow = XCreateWindow(rootDisplay, rootWindow, 0, 0, displayWidth, displayHeight, 0, CopyFromParent, InputOutput, CopyFromParent, CWOverrideRedirect | CWEventMask, &attr);
+    XMapWindow(rootDisplay, newWindow);
+    XFlush(rootDisplay);
+
+    GC gc = XCreateGC(rootDisplay, d, 0, NULL);
+    XSetFunction(rootDisplay, gc, GXxor);
+
+    // XSelectInput(rootDisplay, newWindow, ButtonPressMask | ButtonReleaseMask);
+    XEvent ev;
+    while(1){
+        XNextEvent(rootDisplay, &ev);
+
+        if(ev.type == ButtonPress && ev.xbutton.button == 1){
+            printf("pressed \n");
+            xStart = ev.xbutton.x_root;
+            yStart = ev.xbutton.y_root;
+        }
+        if(ev.type == ButtonRelease && ev.xbutton.button == 1){
+            printf("released \n");
+            xEnd = ev.xbutton.x_root;
+            yEnd = ev.xbutton.y_root;
+            break;
+        }
+    }
+
+    ScreenShot(xStart, yStart, xEnd - xStart, yEnd - yStart);
+}
+
+int main(){
+    // ScreenShot(0,0,0,0);
+    SelectScreen();
     return 0;
 }
