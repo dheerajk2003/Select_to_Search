@@ -10,3 +10,5 @@
 **Got partial screen shot working using XEvent**
 
 **Creating rectangle using GC**
+
+**Changed the cursor while taking screenshot using XGrabPointer**

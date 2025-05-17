@@ -7,12 +7,14 @@
 #include<stdlib.h>
 #include <time.h>
 #include <png.h>
+#include<X11/cursorfont.h>
 
 Display *rootDisplay;
 Window rootWindow;
 int screenNumber;
 XWindowAttributes returnWindowAttributes;
 Drawable d;
+Cursor crosshair;
 
 unsigned char * to_rgb(XImage * image, int width, int height){
     unsigned char* rgb_data = malloc(width * height * 3);
@@ -130,8 +132,12 @@ void SelectScreen(){
     XSetFunction(rootDisplay, gc, GXxor);
     XSetForeground(rootDisplay, gc, WhitePixel(rootDisplay, screenNumber));
 
+    crosshair = XCreateFontCursor(rootDisplay, XC_crosshair);
+    
+    
     // XSelectInput(rootDisplay, newWindow, ButtonPressMask | ButtonReleaseMask);
     XEvent ev;
+    int status = XGrabPointer(rootDisplay, newWindow, True, PointerMotionMask, GrabModeAsync, GrabModeAsync, newWindow, crosshair, CurrentTime);
     Bool pressed = False;
     while(1){
         XNextEvent(rootDisplay, &ev);
@@ -162,6 +168,7 @@ void SelectScreen(){
 
     XUnmapWindow(rootDisplay, newWindow);
     XFlush(rootDisplay);
+    XFreeCursor(rootDisplay, crosshair);
     ScreenShot(xStart, yStart, xEnd - xStart, yEnd - yStart);
 }
 
