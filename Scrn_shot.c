@@ -112,23 +112,27 @@ void ScreenShot(int x, int y, int width, int height){
 
 void SelectScreen(){
     init();
-    int xStart, yStart, xEnd, yEnd;
+    int xStart, yStart, xEnd, yEnd, lastX, lastY;
+    xStart=yStart=xEnd=yEnd=lastX=lastY = 0;
     int displayWidth = DisplayWidth(rootDisplay, screenNumber);
     int displayHeight = DisplayHeight(rootDisplay, screenNumber);
 
     XSetWindowAttributes attr;
     attr.override_redirect = True;
-    attr.event_mask = ButtonPressMask | ButtonReleaseMask;
+    attr.event_mask = ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
 
     Window newWindow = XCreateWindow(rootDisplay, rootWindow, 0, 0, displayWidth, displayHeight, 0, CopyFromParent, InputOutput, CopyFromParent, CWOverrideRedirect | CWEventMask, &attr);
     XMapWindow(rootDisplay, newWindow);
     XFlush(rootDisplay);
 
-    GC gc = XCreateGC(rootDisplay, d, 0, NULL);
+    GC gc = XCreateGC(rootDisplay, newWindow, 0, NULL);
+    d=newWindow;
     XSetFunction(rootDisplay, gc, GXxor);
+    XSetForeground(rootDisplay, gc, WhitePixel(rootDisplay, screenNumber));
 
     // XSelectInput(rootDisplay, newWindow, ButtonPressMask | ButtonReleaseMask);
     XEvent ev;
+    Bool pressed = False;
     while(1){
         XNextEvent(rootDisplay, &ev);
 
@@ -136,15 +140,28 @@ void SelectScreen(){
             printf("pressed \n");
             xStart = ev.xbutton.x_root;
             yStart = ev.xbutton.y_root;
+            lastX = xStart;
+            lastY = yStart;
+            pressed = True;
+        }
+        if(pressed && ev.type == MotionNotify){
+            XDrawRectangle(rootDisplay, d, gc, xStart, yStart, lastX - xStart, lastY - yStart);
+            lastX = ev.xmotion.x;
+            lastY = ev.xmotion.y;
+            XDrawRectangle(rootDisplay, d, gc, xStart, yStart, lastX - xStart, lastY - yStart);
+            XFlush(rootDisplay);
         }
         if(ev.type == ButtonRelease && ev.xbutton.button == 1){
             printf("released \n");
+            XDrawRectangle(rootDisplay, d, gc, xStart, yStart, lastX - xStart, lastY - yStart);
             xEnd = ev.xbutton.x_root;
             yEnd = ev.xbutton.y_root;
             break;
         }
     }
 
+    XUnmapWindow(rootDisplay, newWindow);
+    XFlush(rootDisplay);
     ScreenShot(xStart, yStart, xEnd - xStart, yEnd - yStart);
 }
 

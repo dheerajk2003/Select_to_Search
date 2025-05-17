@@ -8,3 +8,5 @@
 *https://gist.github.com/niw/5963798*
 
 **Got partial screen shot working using XEvent**
+
+**Creating rectangle using GC**
