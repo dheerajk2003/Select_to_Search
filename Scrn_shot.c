@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include"Req_res.c"
+#include"Print_text.c"
 
 Display *rootDisplay;
 Window rootWindow;
@@ -190,7 +191,9 @@ int main() {
   char *json_text = requesting("image.png", "What is in this image describe , if its a product also give buying link. (And don't give markdown , just simple text. Your responce should not exceed 2000 characters.)");
   printf("JSON Text = %s", json_text);
   char *text = get_text(json_text);
+  Notify(text);
   printf("Response = %s\n", text);
+
   // requesting("image.png", "if there is an product in the given image then give links , otherwise just describe image.");
   return 0;
 }
