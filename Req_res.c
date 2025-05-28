@@ -5,6 +5,7 @@
 #include<stdlib.h>
 #include <time.h>
 #include"ToBase64.c"
+#include"GetJson.c"
 
 unsigned char *read_file_to_bytes(const char *filepath, long *file_size) {
     FILE *fp = fopen(filepath, "rb"); // Open in binary mode
@@ -40,14 +41,14 @@ unsigned char *read_file_to_bytes(const char *filepath, long *file_size) {
     return buffer;
 }
 
-void requesting(const char *image_path, const char *prompt_text){
+char* requesting(const char *image_path, const char *prompt_text){
     CURL *curl;
     CURLcode res;
      
     char *GEMINI_API_KEY = getenv("GEMINI_API_KEY");
     if(GEMINI_API_KEY == NULL){
         fprintf(stderr, "Error: GEMINI_API_KEY is not set\n");
-        return;
+        exit(EXIT_FAILURE);
     }
     char *url = malloc(180);
     sprintf(url, "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", GEMINI_API_KEY);
@@ -58,7 +59,7 @@ void requesting(const char *image_path, const char *prompt_text){
     if(!image_bytes){
         free(url);
         printf("didn't get image bytes \n");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     char *base64_encode_image = base64_encode(image_bytes, image_file_size);
@@ -66,7 +67,7 @@ void requesting(const char *image_path, const char *prompt_text){
     if(!base64_encode_image){
         printf("failed to encode\n");
         free(url);
-        return;
+        exit(EXIT_FAILURE);
     }
 
     size_t json_size = strlen(base64_encode_image) + 1024;
@@ -76,7 +77,7 @@ void requesting(const char *image_path, const char *prompt_text){
         printf("failed to allocate json_data\n");
         free(base64_encode_image);
         free(url);
-        return;
+        exit(EXIT_FAILURE);
     }
 
     snprintf(json_data, json_size,
@@ -100,6 +101,8 @@ void requesting(const char *image_path, const char *prompt_text){
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
+    struct string s;
+    init_string(&s);
     if(curl){
 
         struct curl_slist *headers = NULL;
@@ -111,7 +114,9 @@ void requesting(const char *image_path, const char *prompt_text){
 
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+
 
         res = curl_easy_perform(curl);
         if(res != CURLE_OK){
@@ -120,11 +125,13 @@ void requesting(const char *image_path, const char *prompt_text){
         }
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
+        // printf("\nPrinting String :  %s\n", s.ptr);
+        // free(s.ptr);
     }
     curl_global_cleanup();
     free(json_data);
     free(base64_encode_image);
     free(url);
-    return;
+    return s.ptr;
 }
 
