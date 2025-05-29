@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include<stdlib.h>
+#include<sys/stat.h>
 
 
 Display *rootDisplay;
@@ -16,6 +18,7 @@ int screenNumber;
 XWindowAttributes returnWindowAttributes;
 Drawable d;
 Cursor crosshair;
+char* home;
 
 unsigned char *to_rgb(XImage *image, int width, int height) {
   unsigned char *rgb_data = malloc(width * height * 3);
@@ -43,10 +46,23 @@ unsigned char *to_rgb(XImage *image, int width, int height) {
 }
 
 void to_png(unsigned char *rgb_data, int width, int height) {
-  FILE *fp = fopen("image.png", "wb");
-  if (!fp) {
-    printf("Cannot open file exiting \n");
-    return;
+
+  char path[512];
+  snprintf(path, sizeof(path), "%s/Documents/STS/LatestImage.png", home);
+
+  FILE *fp = fopen(path, "w");
+  if(!fp){
+      snprintf(path, sizeof(path), "%s/Documents/STS", home);
+      if(mkdir(path, 0777) == -1){
+          printf("Failed to create directory %s",path);
+          exit(EXIT_FAILURE);
+      }
+      snprintf(path, sizeof(path), "%s/Documents/STS/LatestImage.png", home);
+      fp = fopen(path, "w");
+      if(!fp){
+          printf("Failed to create file");
+          exit(EXIT_FAILURE);
+      }
   }
 
   png_structp png =
@@ -117,8 +133,9 @@ void ScreenShot(int x, int y, int width, int height) {
   XCloseDisplay(rootDisplay);
 }
 
-void SelectScreen() {
+void SelectScreen(char* h) {
   init();
+  home = h;
   int xStart, yStart, xEnd, yEnd, lastX, lastY;
   xStart = yStart = xEnd = yEnd = lastX = lastY = 0;
   int displayWidth = DisplayWidth(rootDisplay, screenNumber);

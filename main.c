@@ -8,36 +8,37 @@
 #include <string.h>
 int main() {
     char *home = getenv("HOME");
+    char path[512];
+    char html[4096]="<html><body><p><bold>";
+    int choice = 2;
     if(!home){
         printf("HOME is not set\n");
         exit(EXIT_FAILURE);
     }
     // ScreenShot(0,0,0,0);
-    SelectScreen();
-    char *json_text = requesting("image.png", "What is in this image describe.");
+    SelectScreen(home);
+
+    snprintf(path, sizeof(path), "%s/Documents/STS/LatestImage.png", home);
+
+    char *json_text = requesting(path, "What is in this image describe (if there is a person try to find who it is, if its a object tell what it is and its use, if its text explain it.). give text not markdown");
     printf("JSON Text = %s", json_text);
     char *text = get_text(json_text);
-    Notify(text);
     printf("Response = %s\n", text);
+    if(choice == 1){
+        Notify(text);
+    }
 
-    char path[512];
-    snprintf(path, sizeof(path), "%s/Documents/STS/LatestResponse.md", home);
+    strcat(html, text);
+    strcat(html, "</bold></p></body></html>");
+
+    snprintf(path, sizeof(path), "%s/Documents/STS/LatestResponse.html", home);
 
     FILE *file = fopen(path, "w");
     if(!file){
-        snprintf(path, sizeof(path), "%s/Documents/STS", home);
-        if(mkdir(path, 0777) == -1){
-            printf("Failed to create directory");
-            exit(EXIT_FAILURE);
-        }
-        snprintf(path, sizeof(path), "%s/Documents/STS/LatestResponse.md", home);
-        file = fopen(path, "w");
-        if(!file){
-            printf("Failed to create file");
-            exit(EXIT_FAILURE);
-        }
+        printf("Failed to create file");
+        exit(EXIT_FAILURE);
     }
-    fprintf(file, "%s", text);
+    fprintf(file, "%s", html);
     fclose(file);
   
     // requesting("image.png", "if there is an product in the given image then give links , otherwise just describe image.");
