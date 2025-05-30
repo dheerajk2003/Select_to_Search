@@ -48,26 +48,21 @@ glib
 
 cmake
 
-🐧 Install on Common Distros
+Install on Common Distros
 Arch Linux / Manjaro:
 
-bash
-Copy
-Edit
-sudo pacman -S libx11 libpng curl cjson libnotify glib2 cmake
+```sudo pacman -S libx11 libpng curl cjson libnotify glib2 cmake```
 Debian / Ubuntu / Linux Mint:
 
-bash
-Copy
-Edit
-sudo apt install libx11-dev libpng-dev libcurl4-openssl-dev libcjson-dev libnotify-dev libglib2.0-dev cmake
+
+```sudo apt install libx11-dev libpng-dev libcurl4-openssl-dev libcjson-dev libnotify-dev libglib2.0-dev cmake```
 Fedora:
 
-bash
-Copy
-Edit
-sudo dnf install libX11-devel libpng-devel libcurl-devel libcjson-devel libnotify-devel glib2-devel cmake
-🔑 Gemini API Key
+
+```sudo dnf install libX11-devel libpng-devel libcurl-devel libcjson-devel libnotify-devel glib2-devel cmake```
+
+
+### 🔑 Gemini API Key
 This tool requires a Gemini API key for accessing the search functionality.
 
 To set it up, add the following line to your /etc/environment file:
@@ -78,19 +73,16 @@ Edit
 GEMINI_API_KEY=your_api_key
 Then restart your session or run source /etc/environment.
 
-🚀 Usage
-1. Default (HTML in browser):
-bash
-Copy
-Edit
-./clone_dir/Select_to_Search/build/sts
-firefox /home/user/Documents/STS/LatestResponse.html
-2. Notification mode:
-bash
-Copy
-Edit
-./clone_dir/Select_to_Search/build/sts -n
-📂 Output
+ ### 🚀 Usage
+#### 1. Default (HTML in browser):
+
+``` ./clone_dir/Select_to_Search/build/sts && firefox /home/user/Documents/STS/LatestResponse.html ```
+
+#### 2. Notification mode:
+
+``` ./clone_dir/Select_to_Search/build/sts -n ```
+
+### 📂 Output
 HTML Response File:
 /home/user/Documents/STS/LatestResponse.html
 
