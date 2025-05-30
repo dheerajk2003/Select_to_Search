@@ -10,7 +10,7 @@ Depending on how the program is run, results are either shown in your default br
 
 ## ✨ Features
 
-- Select any screen area to trigger a contextual search.
+- Select any screen area to trigger a search.
 - Two output modes:
   - **Browser Output:** Default behavior. Opens an HTML file with the search result.
   - **Notification Output:** Run with the `-n` flag to receive the result via desktop notification.
@@ -51,27 +51,36 @@ cmake
 Install on Common Distros
 Arch Linux / Manjaro:
 
-```sudo pacman -S libx11 libpng curl cjson libnotify glib2 cmake```
+```
+sudo pacman -S libx11 libpng curl cjson libnotify glib2 cmake
+```
+
+
 Debian / Ubuntu / Linux Mint:
 
+```
+sudo apt install libx11-dev libpng-dev libcurl4-openssl-dev libcjson-dev libnotify-dev libglib2.0-dev cmake
+```
 
-```sudo apt install libx11-dev libpng-dev libcurl4-openssl-dev libcjson-dev libnotify-dev libglib2.0-dev cmake```
+
 Fedora:
 
+```
+sudo dnf install libX11-devel libpng-devel libcurl-devel libcjson-devel libnotify-devel glib2-devel cmake
+```
 
-```sudo dnf install libX11-devel libpng-devel libcurl-devel libcjson-devel libnotify-devel glib2-devel cmake```
 
 ---
 
 ### 🔑 Gemini API Key
 This tool requires a Gemini API key for accessing the search functionality.
 
-To set it up, add the following line to your /etc/environment file:
+To set it up, add the following line to your **/etc/environment** file:
 
-ini
-Copy
-Edit
+```
 GEMINI_API_KEY=your_api_key
+```
+
 Then restart your session or run source /etc/environment.
 
 ---
@@ -79,11 +88,15 @@ Then restart your session or run source /etc/environment.
  ### 🚀 Usage
 #### 1. Default (HTML in browser):
 
-``` ./clone_dir/Select_to_Search/build/sts && firefox /home/user/Documents/STS/LatestResponse.html ```
+```
+ ./clone_dir/Select_to_Search/build/sts && firefox /home/user/Documents/STS/LatestResponse.html 
+ ```
 
 #### 2. Notification mode:
 
-``` ./clone_dir/Select_to_Search/build/sts -n ```
+```
+ ./clone_dir/Select_to_Search/build/sts -n 
+ ```
 
 
 ---
