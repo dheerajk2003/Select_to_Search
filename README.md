@@ -29,6 +29,7 @@ cd Select_to_Search
 mkdir build && cd build
 cmake ..
 make
+```
 
 📦 Dependencies
 Make sure the following packages are installed:
