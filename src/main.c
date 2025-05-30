@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     char path[512];
     char html[4096]="<html><body><h3><bold>";
     int choice = 2;
-    if(argc > 0)
+    if(argc > 1)
         choice = 1;
     if(!home){
         printf("HOME is not set\n");
@@ -26,22 +26,24 @@ int main(int argc, char *argv[]) {
     printf("JSON Text = %s", json_text);
     char *text = get_text(json_text);
     printf("Response = %s\n", text);
-    if(choice == 1){
-        Notify(text);
+    
+    if(choice == 1 && (strcmp(argv[1], "-n") == 0)){
+        Notify_Res(text);
     }
+    else{
+        strcat(html, text);
+        strcat(html, "</bold></h3></body></html>");
 
-    strcat(html, text);
-    strcat(html, "</bold></h3></body></html>");
+        snprintf(path, sizeof(path), "%s/Documents/STS/LatestResponse.html", home);
 
-    snprintf(path, sizeof(path), "%s/Documents/STS/LatestResponse.html", home);
-
-    FILE *file = fopen(path, "w");
-    if(!file){
-        printf("Failed to create file");
-        exit(EXIT_FAILURE);
+        FILE *file = fopen(path, "w");
+        if(!file){
+            printf("Failed to create file");
+            exit(EXIT_FAILURE);
+        }
+        fprintf(file, "%s", html);
+        fclose(file);
     }
-    fprintf(file, "%s", html);
-    fclose(file);
   
     // requesting("image.png", "if there is an product in the given image then give links , otherwise just describe image.");
     return 0;

@@ -3,7 +3,7 @@
 #include<libgen.h>
 #include<string.h>
 
-void Notify(char* message)
+void Notify_Res(char* message)
 {
     NotifyNotification *notification;
     notify_init("StS");
