@@ -24,14 +24,14 @@ Depending on how the program is run, results are either shown in your default br
 ### 1. Clone and Build
 
 ```bash
-git clone https://github.com/yourusername/Select_to_Search.git
+git clone https://github.com/dheerajk2003/Select_to_Search.git
 cd Select_to_Search
 mkdir build && cd build
 cmake ..
 make
 ```
 
-📦 Dependencies
+### 📦 Dependencies
 Make sure the following packages are installed:
 
 x11
@@ -61,6 +61,7 @@ Fedora:
 
 ```sudo dnf install libX11-devel libpng-devel libcurl-devel libcjson-devel libnotify-devel glib2-devel cmake```
 
+---
 
 ### 🔑 Gemini API Key
 This tool requires a Gemini API key for accessing the search functionality.
@@ -73,6 +74,8 @@ Edit
 GEMINI_API_KEY=your_api_key
 Then restart your session or run source /etc/environment.
 
+---
+
  ### 🚀 Usage
 #### 1. Default (HTML in browser):
 
@@ -81,6 +84,9 @@ Then restart your session or run source /etc/environment.
 #### 2. Notification mode:
 
 ``` ./clone_dir/Select_to_Search/build/sts -n ```
+
+
+---
 
 ### 📂 Output
 HTML Response File:
